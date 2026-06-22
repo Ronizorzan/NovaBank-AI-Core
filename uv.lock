@@ -472,6 +472,7 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "pymupdf" },
     { name = "pypdf" },
+    { name = "uvicorn" },
 ]
 
 [package.metadata]
@@ -487,6 +488,7 @@ requires-dist = [
     { name = "langchain-openai", specifier = ">=1.3.0" },
     { name = "pymupdf", specifier = ">=1.27.2.3" },
     { name = "pypdf", specifier = ">=6.13.2" },
+    { name = "uvicorn", specifier = ">=0.49.0" },
 ]
 
 [[package]]
