@@ -154,8 +154,8 @@ async def stream_generator(query: str, thread_id: str) -> AsyncGenerator[str, No
         full_response = f" [INFO: Resposta vinda do FAQ homologado do NovaBank]\n\n{cached_answer}"
 
         # Adiciona pergunta e reposta (vinda do FAQ) para diálogo fluido com o agente
-        add_message_to_history(thread_id, message=AIMessage(cached_answer))
-        #add_message_to_history(thread_id, message=HumanMessage(secure_query))
+        add_message_to_history(thread_id, message=HumanMessage(secure_query))
+        add_message_to_history(thread_id, message=AIMessage(cached_answer))        
         
         words = full_response.split(' ')
         for word in words:
@@ -188,7 +188,7 @@ async def stream_generator(query: str, thread_id: str) -> AsyncGenerator[str, No
     
     # --- Passo 3: Streaming da LLM ---
     # O método .astream gera chunks assincronamente conforme chegam da OpenAI
-    logging.info(formatted_messages)
+    #logging.info(formatted_messages) --- Somente para DEBUG
     complete_response = ""
     async for chunk in llm_rag.astream(formatted_messages, config=config):
         if chunk.content:
@@ -199,8 +199,8 @@ async def stream_generator(query: str, thread_id: str) -> AsyncGenerator[str, No
     if complete_response:
         logging.info("Resposta do LLM completa. Adicionando ao histórico do Chat")
         # --- Adiciona pergunta e reposta (Vindas do LLM) ao histórico
-        add_message_to_history(thread_id, message=AIMessage(content=complete_response))
-        #add_message_to_history(thread_id, message=HumanMessage(content=secure_query))
+        add_message_to_history(thread_id, message=HumanMessage(content=secure_query))
+        add_message_to_history(thread_id, message=AIMessage(content=complete_response))        
 
 
 
