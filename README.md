@@ -25,7 +25,7 @@ A aplicação utiliza a arquitetura **RAG (Retrieval-Augmented Generation)**, po
 Este projeto foi desenhado focando nos desafios reais de instituições financeiras modernas:
 
 ### 1. Experiência do Cliente (CX) Superior
-* **Respostas Contextualizadas:** Utiliza a documentação interna real do banco para responder, garantindo acuracidade.
+* **Respostas Contextualizadas:** Utiliza a documentação interna real do banco para responder, garantindo acuracidade e confiança.
 * **Latência Percebida Mínima:** Implementação de **Streaming de Resposta**, onde o usuário vê a resposta sendo construída em tempo real, eliminando a ansiedade da espera.
 
 ### 2. Eficiência Operacional e Redução de Custo (ROI)
@@ -34,6 +34,10 @@ Este projeto foi desenhado focando nos desafios reais de instituições financei
 
 ### 3. Segurança e Conformidade (LGPD)
 * **Redação de PII:** Uma camada de segurança inspeciona a pergunta do usuário e mascara dados sensíveis (CPF, Cartões, E-mails) *antes* que eles sejam enviados para modelos de IA externos, garantindo conformidade com a LGPD.
+
+### 4. Escalabilidade e Robustez
+* **Chamadas seguras e confiáveis à API** Uma integração eficiente entre **Nginx e Certbot** para servir a **API FastAPI** a diferentes tipos de aplicação.
+  Construída e disponibilizada através do Aws EC2 em um container Docker, a API garante profissionalismo, segurança e confiabilidade para um projeto de **nível empresarial**.
 
 ---
 
@@ -57,7 +61,7 @@ flowchart TD
     subgraph RAGFLOW["Pipeline RAG"]
         RAG["Orquestração RAG"]
         DOCS["Documentação Interna<br/>ChromaDB"]
-        LLM["OpenAI GPT-4o-mini"]
+        LLM["Modelo de IA"]
     end
 
     STREAM["Streaming de Resposta<br/>SSE"]
@@ -106,3 +110,8 @@ project/
 └── docker-compose.yml      # Arquivo de orquestração completa da API FastAPI (nginx + certbot)
 └── nginx.conf              # Configuração do Nginx
 ```
+
++ > Esse projeto mostra como uma integração eficiente entre diferentes tecnologias podem fornecer uma ferramente robusta e eficiência operacional, otimizando custos e 
+entregando uma **experiência excepcional para os clientes.**
+
++ > Essa combinação poderosa pode aumentar exponencialmente não só a retenção, mas também e **aquisição de novos clientes para a empresa.**

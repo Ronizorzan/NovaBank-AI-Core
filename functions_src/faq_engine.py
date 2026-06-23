@@ -17,8 +17,8 @@ COLLECTION_FAQ_NAME = "faq_novabank_data"   # Nome da Coleção
 # Limiar crítico: só aceita FAQ se a distância vetorial for pequena (similaridade alta)
 # Para distância L2 (padrão do Chroma), menor score = mais similar. 
 
-# Baseado em testes nessa base de dados chegamos ao valor de aproximadamente **0.6** de similaridade (Modelo embed-4.0 -> Cohere)
-FAQ_THRESHOLD = 0.6
+# Baseado em testes nessa base de dados chegamos ao valor de aproximadamente **0.5->0.6** de similaridade (Modelo embed-4.0 -> Cohere)
+FAQ_THRESHOLD = 0.55
 
 class FaqEngine:
     def __init__(self, embedding_model: CohereEmbeddings):
