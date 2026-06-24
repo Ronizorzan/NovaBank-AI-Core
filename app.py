@@ -74,7 +74,7 @@ logging.info("Inicializando Pipeline RAG de documentos (PDFs)...")
 rag_pipeline = RagPipeline(DOCS_PATH, embedding_model=embedding_model)
 
 # pipeline.run() retorna um Chroma o vectorstore pronto.
-doc_vectorstore = rag_pipeline.run(chunk_size=500, chunk_overlap=100) 
+doc_vectorstore = rag_pipeline.run(chunk_size=750, chunk_overlap=150) 
 logging.info("Componentes de IA inicializados com sucesso.")
 
 # 4. LLM para o fluxo RAG (configurado para streaming)
@@ -110,7 +110,8 @@ prompt_template = ChatPromptTemplate.from_messages(
     Mantenha a conversa fluida e agradável, tratando o usuário com empatia e dedicação.
 
     Utilize EXCLUSIVAMENTE o contexto abaixo, extraído da documentação interna da empresa, para responder à pergunta do usuário.
-    Responda de forma concisa, profissional e completa. SE ATENTE para as informações relevantes retornadas no contexto interno da empresa.
+    Responda de forma concisa, profissional, informativa e cumprimente o usuário somente na primeira interação para manter a conversa mais fluida.
+    SE ATENTE para as informações relevantes retornadas no contexto interno da empresa e -- igualmente importante -- para o histórico de interações para responder de forma precisa.
     Se ainda assim, você não souber a resposta com base no contexto, responda educadamente 
     ao cliente, evidenciando de forma clara que não tem essa informação e que melhorias estão sendo
     feitas que todas as perguntas possam ser respondidas de forma eficaz.
@@ -160,15 +161,15 @@ async def stream_generator(query: str, thread_id: str) -> AsyncGenerator[str, No
         words = full_response.split(' ')
         for word in words:
             yield word + ' '
-            await asyncio.sleep(0.005) # Delay imperceptível para UI processar como stream
+            await asyncio.sleep(0.01) # Delay imperceptível para UI processar como stream
         return 
 
     # --- Passo 2: Se não está no FAQ, segue para RAG (LLM) ---
     logging.info("Nenhum match encontrado no FAQ. Iniciando busca nos documentos técnicos (RAG)...")
     
     # Recupera contexto (Usa método similarity_search do vectorstore)
-    retriever = doc_vectorstore.as_retriever(search_type="mmr",  # Retorna 15 resultados e escolhe os 4 com maior similaridade (lambda_mult -> + diversidade)
-                                              search_kwargs={'k': 5, "lambda_mult": 0.10, "fetch_k": 15}) 
+    retriever = doc_vectorstore.as_retriever(search_type="mmr",  # Retorna 15 resultados e escolhe os 6 com maior similaridade (lambda_mult -> + diversidade)
+                                              search_kwargs={'k': 6, "lambda_mult": 0.10, "fetch_k": 15}) 
     # Para este fluxo, usaremos assincrono se disponível.
     docs = await asyncio.to_thread(retriever.invoke, secure_query)
     context = "\n\n".join([doc.page_content for doc in docs])
@@ -188,7 +189,7 @@ async def stream_generator(query: str, thread_id: str) -> AsyncGenerator[str, No
     
     # --- Passo 3: Streaming da LLM ---
     # O método .astream gera chunks assincronamente conforme chegam da OpenAI
-    #logging.info(formatted_messages) --- Somente para DEBUG
+    #logging.info(formatted_messages) # --- Somente para DEBUG
     complete_response = ""
     async for chunk in llm_rag.astream(formatted_messages, config=config):
         if chunk.content:
@@ -239,4 +240,4 @@ def get_stats():
 if __name__ == "__main__":
     import uvicorn
     # Executa o servidor
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=False)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
