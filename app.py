@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 from langchain_cohere import CohereEmbeddings
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, BaseMessage
+from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 # Importações dos módulos modulares que criamos
@@ -226,7 +226,7 @@ async def query_pipeline_stream(
         )
     except Exception as e:
         logging.error(f"Erro ao processar query em streaming: {e}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Erro interno do assistente.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Erro interno do assistente: {e}.")
 
 
 # --- Endpoint Extra (Para Consultas do tempo médio a qualquer momento)
@@ -240,4 +240,4 @@ def get_stats():
 if __name__ == "__main__":
     import uvicorn
     # Executa o servidor
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=False)

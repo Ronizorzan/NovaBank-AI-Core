@@ -9,6 +9,8 @@ O **NovaBank AI-Core** é uma solução de inteligência artificial generativa d
 
 A aplicação utiliza a arquitetura **RAG (Retrieval-Augmented Generation)**, potencializada por uma camada intermediária de **Cache Semântico (FAQ)** e uma camada de **Proteção de Dados Sensíveis (PII)**.
 
+![Novabank AI-Core](files/Novabank.gif)
+
 
 ## 📊 Métricas de Sucesso da Aplicação
 
