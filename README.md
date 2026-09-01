@@ -14,13 +14,28 @@ A aplicação utiliza a arquitetura **RAG (Retrieval-Augmented Generation)**, po
 
 ## 📊 Métricas de Sucesso da Aplicação
 
-| Métrica | Sem AI-Core | Com AI-Core | Impacto Business |
+| Métrica | Sem AI-Core | Com AI-Core | Impacto Business Esperado|
 |---|---|---|---|
-| Tempo de Resposta (Média) | ~10-15 m (Humano) | < 2 s (via RAG) <br> < 100 ms (via consulta FAQ) | Aumento drástico na satisfação do cliente (CSAT) |
+| Tempo de Resposta (Média) | ~10-15 m (Humano) | < 7 s (via RAG) <br> < 300 ms (via consulta FAQ) | Aumento drástico na satisfação do cliente (CSAT) |
 | Custo por Atendimento | Alto (Fator Humano) | Baixo (Tokens RAG) <br> Zero (Tokens FAQ) | Redução significativa no OPEX do Call Center |
 | Taxa de Resolução (FCR) | Depende do treinamento oferecido pela empresa | Alta e Consistente (Baseada na Documentação da empresa.) | Menor reabertura de chamados |
 | Risco de Vazamento de Dados | Humano/Processo | Mitigado via Software (Redação PII) | Conformidade LGPD e proteção da marca |
 
+## 📈 Benchmark do Cache Semântico (validação executada)
+
+A seguinte comparação foi executada em ambiente real da API usando o mesmo fluxo de pergunta: busca no FAQ com cache semântico vs fallback para RAG completo (recuperação + geração em LLM).
+
+| Cenário | Tempo médio (ms) | P95 (ms) |
+|---|---:|---:|
+| Cache semântico (FAQ hit) | 274.8 | 302.0 |
+| RAG completo (fallback) | 6163.4 | 6163.4 |
+
+- Speedup observado: 22.4x
+- Redução de tempo médio: 95.5%
+
+![Benchmark do cache semântico](reports/semantic_cache_benchmark.png)
+
+> Este resultado reforça que a camada de cache semântico tem impacto direto em UX, custo operacional e previsibilidade de resposta em cenários de perguntas frequentes e repetitivas.
 
 ## 🌟 Proposta de Valor e Impacto no Negócio
 
@@ -94,24 +109,35 @@ flowchart TD
     class STREAM stream;
 ```
 
+## ▶️ Como rodar o benchmark novamente (Na pasta do projeto)
+
+### - Rode a API do projeto com:
+> `python app.py`
+
+### - Rode o benchmark de teste novamente com:
+> `python benchmark_semantic_cache.py --cache-iterations 20 --fallback-iterations 3 --output-dir reports`
 
 ## 📁 Estrutura do Projeto
 ```
 project/
-├── .env                    # Para adicionar as chaves de API
-├── chroma_db_faq           # Banco de dados vetorial do FAQ
-├── files/                  # PDFs utilizados no sistema RAG
-├── data/                   # Dados  de FAQ que vão alimentar o sistema (quanto mais completo, melhor)
-│   └── faq.py              # O arquivo FAQ de perguntas e respostas prontas (dados puros)
-├── functions_src/          # Módulo de funções e classes principais
-│   ├── faq_engine.py       # Lógica para criar/gerenciar o banco de FAQ
-│   ├── rag_pipeline.py     # Pipeline de documentos (centraliza o pipeline dos documentos RAG)
-│   └── security.py         # Segurança dos dados (Verificação e anonimização de dados sigilosos)
-└── app.py                  # Aplicação FastAPI (centralizada somente a lógica principal da API)
-└── Dockerfile              # Arquivo de conteinerização (para deploy rápido e eficiente)
-└── docker-compose.yml      # Arquivo de orquestração completa da API FastAPI (nginx + certbot)
-└── nginx.conf              # Configuração do Nginx
+├── .env                        # Para adicionar as chaves de API
+├── chroma_db_faq               # Banco de dados vetorial do FAQ
+├── files/                      # PDFs utilizados no sistema RAG
+├── data/                       # Dados  de FAQ que vão alimentar o sistema (quanto mais completo, melhor)
+│   └── faq.py                  # O arquivo FAQ de perguntas e respostas prontas (dados puros)
+├── functions_src/              # Módulo de funções e classes principais
+│   ├── faq_engine.py           # Lógica para criar/gerenciar o banco de FAQ
+│   ├── rag_pipeline.py         # Pipeline de documentos (centraliza o pipeline dos documentos RAG)
+│   └── security.py             # Segurança dos dados (Verificação e anonimização de dados sigilosos)
+└── app.py                      # Aplicação FastAPI (centralizada somente a lógica principal da API)
+└── benchmark_semantic_cache.py # Benchmark para validação de eficiência do cache (validado)
+└── Dockerfile                  # Arquivo de conteinerização (para deploy rápido e eficiente)
+└── docker-compose.yml          # Arquivo de orquestração completa da API FastAPI (nginx + certbot)
+└── nginx.conf                  # Configuração do Nginx
 ```
+
+
+
 
 + > Esse projeto mostra como uma integração eficiente entre diferentes tecnologias podem fornecer uma ferramente robusta e eficiência operacional, otimizando custos e 
 entregando uma **experiência excepcional para os clientes.**
