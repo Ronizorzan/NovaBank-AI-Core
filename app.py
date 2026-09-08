@@ -11,7 +11,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 # LangChain / OpenAI Imports (modernos)
-from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
 from langchain_cohere import CohereEmbeddings
 from langchain_core.messages import HumanMessage, AIMessage, BaseMessage
@@ -36,7 +35,7 @@ app = FastAPI(
 # --- CORs para o Lovable (FrontEnd) conseguir acessar a aplicação
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # Origens que podem acessar a API (Será atualizado posteriormente)
+    allow_origins=["*"], # Origens que podem acessar a API (Será atualizado posteriormente para permitir apenas requisições de IPs específicos)
      allow_credentials=True, 
      allow_methods=["*"],
      allow_headers=["*"]
@@ -214,6 +213,9 @@ async def query_pipeline_stream(
     """
     Endpoint que retorna resposta em streaming (Server-Sent Events).
     Utiliza fluxo otimizado: Segurança PII -> FAQ -> RAG Docs.
+    Parâmetros:
+    q: A pergunta do usuário.
+    thread_id: Id da sessão (usado para guardar o histórico do chat -> memória do agente)
     """
     if not q or len(q.strip()) < 3:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="A pergunta deve ter pelo menos 3 caracteres.")
@@ -232,6 +234,12 @@ async def query_pipeline_stream(
 # --- Endpoint Extra (Para Consultas do tempo médio a qualquer momento)
 @app.get("/api/v1/stats")
 def get_stats():
+    """
+    Endpoint para o retorno de métricas da aplicação.
+    Retorna:
+    - O tempo médio de resposta da aplicação.
+    - O total de requisições recebidas pela aplicação.
+    """
     return {
         "average_time_ms": AppState.get_average_ms(),
         "total_requests": AppState.total_requests
