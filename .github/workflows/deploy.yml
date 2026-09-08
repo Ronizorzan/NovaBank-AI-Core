@@ -3,7 +3,7 @@ name: Deploy Nova Aplicacao FastAPI
 on:
   push:
     branches:
-      - main # O deploy ocorre sempre que você fizer push na main
+      - main # O deploy ocorre sempre que houver um  push na main
 
 jobs:
   deploy:
@@ -17,17 +17,17 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }} # Geralmente 'ubuntu'
-          key: ${{ secrets.EC2_SSH_KEY }} # Sua chave .pem privada
+          username: ${{ secrets.EC2_USER }} # Usuário 'ubuntu'
+          key: ${{ secrets.EC2_SSH_KEY }} # Chave .pem privada
           script: |
-            # Entra na pasta do projeto (ajuste o caminho se necessário)
-            cd ~/caminho/para/nova/aplicacao
+            # Entra na pasta do projeto
+            cd NovaBank-AI-Core/
             
             # Puxa o código novo
             git pull origin main
             
             # Reconstrói a imagem da API e reinicia o container
-            docker compose up -d --build web
+            docker-compose up -d --build web
             
             # Remove imagens antigas soltas para não lotar o disco da EC2
             docker image prune -f
